@@ -1,7 +1,7 @@
 // frontend/src/pages/Home.jsx
 import React, { useEffect, useState } from 'react';
 import API from '../api';
-import { Carousel, Row, Col, ListGroup } from 'react-bootstrap';
+import { Carousel, Row, Col, ListGroup, Form, Button, InputGroup } from 'react-bootstrap';
 import EventCard from '../components/EventCard';
 import EventModal from '../components/EventModal';
 
@@ -10,6 +10,11 @@ export default function Home() {
   const [events, setEvents] = useState([]);
   const [selected, setSelected] = useState(null);
   const [show, setShow] = useState(false);
+
+  // For past events filter
+  const [year, setYear] = useState('');
+  const [keyword, setKeyword] = useState('');
+  const [filteredPast, setFilteredPast] = useState([]);
 
   useEffect(() => {
     API.get('/news').then(res => setNews(res.data)).catch(console.error);
@@ -33,16 +38,32 @@ export default function Home() {
     .filter(e => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  // Latest events: only upcoming events, sorted by creation date
   const latest = upcoming
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 6);
+
+  // Apply filter function
+  const applyFilter = () => {
+    let temp = past;
+    if (year) {
+      temp = temp.filter(e => new Date(e.eventDate).getFullYear() === parseInt(year));
+    }
+    if (keyword) {
+      temp = temp.filter(e =>
+        e.title.toLowerCase().includes(keyword.toLowerCase()) ||
+        e.description.toLowerCase().includes(keyword.toLowerCase())
+      );
+    }
+    setFilteredPast(temp);
+  };
+
+  // Prepare years list from past events
+  const years = Array.from(new Set(past.map(e => new Date(e.eventDate).getFullYear()))).sort((a,b) => b-a);
 
   return (
     <>
       {/* Banner + Upcoming Events list */}
       <Row className="mb-4">
-        {/* Carousel Banner */}
         <Col md={8}>
           <Carousel>
             {(events.slice(0, 3).length ? events.slice(0, 3) : [{
@@ -64,7 +85,6 @@ export default function Home() {
           </Carousel>
         </Col>
 
-        {/* Upcoming Events list */}
         <Col md={4}>
           <h5>Upcoming Events</h5>
           <ListGroup>
@@ -92,8 +112,8 @@ export default function Home() {
       </div>
 
       {/* Latest Events */}
-      <h4>Latest Events</h4>
-      <Row xs={1} md={3} className="g-3">
+      <h5>Latest Events</h5>
+      <Row xs={1} md={3} className="g-4">
         {latest.map(ev => (
           <Col key={ev._id}>
             <EventCard ev={ev} onView={handleView} />
@@ -101,12 +121,29 @@ export default function Home() {
         ))}
       </Row>
 
-      {/* Past Events */}
-      <h4 className="mt-4">Past Events</h4>
+      {/* Past Events with filter */}
+      <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
+        <h5 className="mb-0">Past Events</h5>
+        <InputGroup style={{ maxWidth: '400px' }}>
+          <Form.Select size="sm" value={year} onChange={e => setYear(e.target.value)}>
+            <option value="">All Years</option>
+            {years.map(y => <option key={y} value={y}>{y}</option>)}
+          </Form.Select>
+          <Form.Control
+            size="sm"
+            type="text"
+            placeholder="Search..."
+            value={keyword}
+            onChange={e => setKeyword(e.target.value)}
+          />
+          <Button size="sm" variant="primary" onClick={applyFilter}>Apply</Button>
+        </InputGroup>
+      </div>
+
       <Row xs={1} md={3} className="g-3 mb-4">
-        {past.length ? past.map(ev => (
+        {(filteredPast.length ? filteredPast : past).map(ev => (
           <Col key={ev._id}><EventCard ev={ev} onView={handleView} /></Col>
-        )) : <p className="px-3">No past events.</p>}
+        ))}
       </Row>
 
       <EventModal show={show} onHide={() => setShow(false)} event={selected} />

@@ -9,7 +9,7 @@ export default function MainNavbar() {
         {/* logo */}
         <Navbar.Brand as={Link} to="/">
           <img
-            src="DSVV_LOGO_BLACK.png"
+            src="/DSVV_LOGO_BLACK.png"
             alt="Dept of CS"
             height="50"
             className="d-inline-block align-top"

@@ -1,10 +1,10 @@
 // frontend/src/admin/AdminDashboard.jsx
 import React, { useEffect, useState } from "react";
 import API from "../api";
-import { Table, Button, Modal } from "react-bootstrap";
+import { Table, Button, Modal, Card } from "react-bootstrap";
 import AdminEventForm from "./AdminEventForm";
 import { useNavigate } from "react-router-dom";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaSignOutAlt } from "react-icons/fa";
 
 export default function AdminDashboard() {
   const [events, setEvents] = useState([]);
@@ -47,72 +47,82 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Admin — Manage Events</h3>
-        <div>
-          <Button
-            variant="success"
-            onClick={() => {
-              setEditing(null);
-              setShowForm(true);
-            }}
-          >
-            Create Event
-          </Button>{" "}
-          <Button
-            variant="secondary"
-            onClick={() => {
-              localStorage.removeItem("admin_key");
-              navigate("/admin");
-            }}
-          >
-            Logout
-          </Button>
-        </div>
-      </div>
+    <div className="container mt-4">
+      <Card className="shadow-sm border-0">
+        <Card.Header className="d-flex justify-content-between align-items-center bg-light">
+          <h4 className="mb-0">📅 Manage Events</h4>
+          <div>
+            <Button
+              variant="success"
+              className="me-2"
+              onClick={() => {
+                setEditing(null);
+                setShowForm(true);
+              }}
+            >
+              <FaPlus className="me-1" /> Create
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                localStorage.removeItem("admin_key");
+                navigate("/admin");
+              }}
+            >
+              <FaSignOutAlt className="me-1" /> Logout
+            </Button>
+          </div>
+        </Card.Header>
 
-      <Table striped bordered hover>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Date</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {events.map((ev) => (
-            <tr key={ev._id}>
-              <td>{ev.title}</td>
-              <td>{new Date(ev.eventDate).toLocaleString()}</td>
-              <td className="text-center">
-                <Button
-                  size="sm"
-                  variant="outline-primary"
-                  className="me-2"
-                  onClick={() => {
-                    setEditing(ev);
-                    setShowForm(true);
-                  }}
-                >
-                  <FaEdit />
-                </Button>
-                <Button
-                  size="sm"
-                  variant="outline-danger"
-                  onClick={() => handleDelete(ev._id)}
-                >
-                  <FaTrash />
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+        <Card.Body>
+          <Table hover responsive className="align-middle">
+            <thead className="table-light">
+              <tr>
+                <th>Title</th>
+                <th>Date</th>
+                <th style={{ width: "120px" }} className="text-center">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {events.map((ev) => (
+                <tr key={ev._id}>
+                  <td>{ev.title}</td>
+                  <td>{new Date(ev.eventDate).toLocaleString()}</td>
+                  <td className="text-center">
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      className="me-2 rounded-circle"
+                      onClick={() => {
+                        setEditing(ev);
+                        setShowForm(true);
+                      }}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline-danger"
+                      className="rounded-circle"
+                      onClick={() => handleDelete(ev._id)}
+                    >
+                      <FaTrash />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Card.Body>
+      </Card>
 
-      <Modal show={showForm} onHide={() => setShowForm(false)} size="lg">
+      <Modal show={showForm} onHide={() => setShowForm(false)} size="lg" centered>
         <Modal.Header closeButton>
-          <Modal.Title>{editing ? "Edit Event" : "Create Event"}</Modal.Title>
+          <Modal.Title>
+            {editing ? "✏️ Edit Event" : "➕ Create Event"}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <AdminEventForm

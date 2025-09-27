@@ -5,9 +5,15 @@ export default function Footer() {
   return (
     <footer className="bg-dark text-light pt-5">
       <Container>
-        <Row className="mb-4">
-          {/* Department Info */}
-          <Col md={4} sm={12} className="mb-3">
+        <Row className="mb-4 align-items-center">
+          {/* Logo + Department Info */}
+          <Col md={4} sm={12} className="mb-3 text-center text-md-start">
+            <img
+              src="/DSVV_LOGO_WHITE.png"
+              alt="Dept of CS"
+            height="50"
+            className="d-inline-block align-top"
+            />
             <h5>Department of Computer Science</h5>
             <p>
               The Department of Computer Science at DSVV aims to provide quality
@@ -98,7 +104,7 @@ export default function Footer() {
               <br />
               Email: computer.science@dsvv.ac.in
             </p>
-            
+
             <div className="d-flex gap-3">
               <a href="#" className="text-light fs-5">
                 <i className="bi bi-facebook"></i>
