@@ -1,9 +1,17 @@
 // frontend/src/pages/Home.jsx
-import React, { useEffect, useState } from 'react';
-import API from '../api';
-import { Carousel, Row, Col, ListGroup, Form, Button, InputGroup } from 'react-bootstrap';
-import EventCard from '../components/EventCard';
-import EventModal from '../components/EventModal';
+import React, { useEffect, useState } from "react";
+import API from "../api";
+import {
+  Carousel,
+  Row,
+  Col,
+  ListGroup,
+  Form,
+  Button,
+  InputGroup,
+} from "react-bootstrap";
+import EventCard from "../components/EventCard";
+import EventModal from "../components/EventModal";
 
 export default function Home() {
   const [news, setNews] = useState([]);
@@ -12,16 +20,20 @@ export default function Home() {
   const [show, setShow] = useState(false);
 
   // For past events filter
-  const [year, setYear] = useState('');
-  const [keyword, setKeyword] = useState('');
+  const [year, setYear] = useState("");
+  const [keyword, setKeyword] = useState("");
   const [filteredPast, setFilteredPast] = useState([]);
 
   useEffect(() => {
-    API.get('/news').then(res => setNews(res.data)).catch(console.error);
-    API.get('/events').then(res => setEvents(res.data)).catch(console.error);
+    API.get("/news")
+      .then((res) => setNews(res.data))
+      .catch(console.error);
+    API.get("/events")
+      .then((res) => setEvents(res.data))
+      .catch(console.error);
   }, []);
 
-  const handleView = ev => {
+  const handleView = (ev) => {
     setSelected(ev);
     setShow(true);
   };
@@ -30,15 +42,16 @@ export default function Home() {
 
   // Upcoming events
   const upcoming = events
-    .filter(e => new Date(e.eventDate) >= now)
+    .filter((e) => new Date(e.eventDate) >= now)
     .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
 
   // Past events
   const past = events
-    .filter(e => new Date(e.eventDate) < now)
+    .filter((e) => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  const latest = upcoming
+  // Latest events (from past events only)
+  const latest = past
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 6);
 
@@ -46,36 +59,48 @@ export default function Home() {
   const applyFilter = () => {
     let temp = past;
     if (year) {
-      temp = temp.filter(e => new Date(e.eventDate).getFullYear() === parseInt(year));
+      temp = temp.filter(
+        (e) => new Date(e.eventDate).getFullYear() === parseInt(year)
+      );
     }
     if (keyword) {
-      temp = temp.filter(e =>
-        e.title.toLowerCase().includes(keyword.toLowerCase()) ||
-        e.description.toLowerCase().includes(keyword.toLowerCase())
+      temp = temp.filter(
+        (e) =>
+          e.title.toLowerCase().includes(keyword.toLowerCase()) ||
+          e.description.toLowerCase().includes(keyword.toLowerCase())
       );
     }
     setFilteredPast(temp);
   };
 
   // Prepare years list from past events
-  const years = Array.from(new Set(past.map(e => new Date(e.eventDate).getFullYear()))).sort((a,b) => b-a);
+  const years = Array.from(
+    new Set(past.map((e) => new Date(e.eventDate).getFullYear()))
+  ).sort((a, b) => b - a);
 
   return (
     <>
       {/* Banner + Upcoming Events list */}
       <Row className="mb-4">
+        {/* Carousel Banner */}
         <Col md={8}>
           <Carousel>
-            {(events.slice(0, 3).length ? events.slice(0, 3) : [{
-              title: 'Welcome',
-              imageUrl: 'https://via.placeholder.com/1600x400?text=News+Portal'
-            }]).map((item, idx) => (
+            {(latest.length
+              ? latest.slice(0, 3)
+              : [
+                  {
+                    title: "Welcome",
+                    imageUrl:
+                      "https://via.placeholder.com/1600x400?text=News+Portal",
+                  },
+                ]
+            ).map((item, idx) => (
               <Carousel.Item key={idx}>
                 <img
                   className="d-block w-100"
-                  src={item.imageUrl || 'https://via.placeholder.com/1600x400'}
+                  src={item.imageUrl || "https://via.placeholder.com/1600x400"}
                   alt={`slide-${idx}`}
-                  style={{ height: 350, objectFit: 'cover' }}
+                  style={{ height: 350, objectFit: "cover" }}
                 />
                 <Carousel.Caption>
                   <h3>{item.title}</h3>
@@ -88,24 +113,37 @@ export default function Home() {
         <Col md={4}>
           <h5>Upcoming Events</h5>
           <ListGroup>
-            {upcoming.length ? upcoming.map(ev => (
-              <ListGroup.Item key={ev._id}>
-                <div style={{ fontWeight: '600' }}>{ev.title}</div>
-                <div style={{ fontSize: '0.85rem', color: '#555' }}>
-                  {new Date(ev.eventDate).toLocaleDateString()} {new Date(ev.eventDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-                </div>
-              </ListGroup.Item>
-            )) : <ListGroup.Item>No upcoming events</ListGroup.Item>}
+            {upcoming.length ? (
+              upcoming.map((ev) => (
+                <ListGroup.Item key={ev._id}>
+                  <div style={{ fontWeight: "600" }}>{ev.title}</div>
+                  <div style={{ fontSize: "0.85rem", color: "#555" }}>
+                    {new Date(ev.eventDate).toLocaleDateString()}{" "}
+                    {new Date(ev.eventDate).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </ListGroup.Item>
+              ))
+            ) : (
+              <ListGroup.Item>No upcoming events</ListGroup.Item>
+            )}
           </ListGroup>
         </Col>
       </Row>
 
       {/* News marquee */}
       <div className="mt-3 mb-3 p-2 bg-light border">
-        <marquee behavior="scroll" direction="left" style={{ color: 'red', fontWeight: 600 }}>
+        <marquee
+          behavior="scroll"
+          direction="left"
+          style={{ color: "red", fontWeight: 600 }}
+        >
           {news.map((n, i) => (
             <span key={n.id}>
-              {n.title}{i < news.length - 1 ? ' — ' : ''}
+              {n.title}
+              {i < news.length - 1 ? " — " : ""}
             </span>
           ))}
         </marquee>
@@ -114,7 +152,7 @@ export default function Home() {
       {/* Latest Events */}
       <h5>Latest Events</h5>
       <Row xs={1} md={3} className="g-4">
-        {latest.map(ev => (
+        {latest.map((ev) => (
           <Col key={ev._id}>
             <EventCard ev={ev} onView={handleView} />
           </Col>
@@ -124,25 +162,37 @@ export default function Home() {
       {/* Past Events with filter */}
       <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
         <h5 className="mb-0">Past Events</h5>
-        <InputGroup style={{ maxWidth: '400px' }}>
-          <Form.Select size="sm" value={year} onChange={e => setYear(e.target.value)}>
+        <InputGroup style={{ maxWidth: "400px" }}>
+          <Form.Select
+            size="sm"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+          >
             <option value="">All Years</option>
-            {years.map(y => <option key={y} value={y}>{y}</option>)}
+            {years.map((y) => (
+              <option key={y} value={y}>
+                {y}
+              </option>
+            ))}
           </Form.Select>
           <Form.Control
             size="sm"
             type="text"
             placeholder="Search..."
             value={keyword}
-            onChange={e => setKeyword(e.target.value)}
+            onChange={(e) => setKeyword(e.target.value)}
           />
-          <Button size="sm" variant="primary" onClick={applyFilter}>Apply</Button>
+          <Button size="sm" variant="primary" onClick={applyFilter}>
+            Apply
+          </Button>
         </InputGroup>
       </div>
 
       <Row xs={1} md={3} className="g-3 mb-4">
-        {(filteredPast.length ? filteredPast : past).map(ev => (
-          <Col key={ev._id}><EventCard ev={ev} onView={handleView} /></Col>
+        {(filteredPast.length ? filteredPast : past).map((ev) => (
+          <Col key={ev._id}>
+            <EventCard ev={ev} onView={handleView} />
+          </Col>
         ))}
       </Row>
 
