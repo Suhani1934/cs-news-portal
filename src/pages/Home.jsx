@@ -50,10 +50,8 @@ export default function Home() {
     .filter((e) => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  // Latest events (from past events only)
-  const latest = past
-    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 6);
+  // Latest = Only past events (recent first, limit 3)
+  const latest = past.slice(0, 3);
 
   // Apply filter function
   const applyFilter = () => {
@@ -151,12 +149,16 @@ export default function Home() {
 
       {/* Latest Events */}
       <h5>Latest Events</h5>
-      <Row xs={1} md={3} className="g-4">
-        {latest.map((ev) => (
-          <Col key={ev._id}>
-            <EventCard ev={ev} onView={handleView} />
-          </Col>
-        ))}
+      <Row xs={1} md={3} className="g-3">
+        {latest.length ? (
+          latest.map((ev) => (
+            <Col key={ev._id}>
+              <EventCard ev={ev} onView={handleView} />
+            </Col>
+          ))
+        ) : (
+          <p className="px-3">No recent past events.</p>
+        )}
       </Row>
 
       {/* Past Events with filter */}
