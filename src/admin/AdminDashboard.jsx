@@ -62,15 +62,7 @@ export default function AdminDashboard() {
             >
               <FaPlus className="me-1" /> Create
             </Button>
-            <Button
-              variant="secondary"
-              onClick={() => {
-                localStorage.removeItem("admin_key");
-                navigate("/admin");
-              }}
-            >
-              <FaSignOutAlt className="me-1" /> Logout
-            </Button>
+            
           </div>
         </Card.Header>
 

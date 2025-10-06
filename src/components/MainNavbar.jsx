@@ -1,10 +1,18 @@
 // frontend/src/components/MainNavbar.jsx
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaUser, FaTachometerAlt, FaSignOutAlt } from "react-icons/fa";
 
 export default function MainNavbar() {
+  const navigate = useNavigate();
+  const adminKey = localStorage.getItem("admin_key");
+
+  const handleLogout = () => {
+    localStorage.removeItem("admin_key");
+    navigate("/");
+  };
+
   return (
     <Navbar expand="lg" sticky="top" className="navbar-glass shadow-sm">
       <Container className="d-flex justify-content-between align-items-center">
@@ -21,21 +29,43 @@ export default function MainNavbar() {
         {/* Center: Title */}
         <div className="mx-auto text-center d-none d-lg-block">
           <span style={{ fontSize: "1.5rem", fontWeight: "700", color: "#000" }}>
-            News & Events
+            Dept of Computer Science News & Events
           </span>
         </div>
 
-        {/* Right: Admin login */}
-        <Nav className="ms-auto">
-          <Button
-            as={Link}
-            to="/admin"
-            variant="outline-dark"
-            size="sm"
-            className="d-flex align-items-center"
-          >
-            <FaUser className="me-1" /> Login
-          </Button>
+        {/* Right: Admin actions */}
+        <Nav className="ms-auto d-flex gap-2">
+          {!adminKey ? (
+            <Button
+              as={Link}
+              to="/admin"
+              variant="outline-dark"
+              size="sm"
+              className="d-flex align-items-center"
+            >
+              <FaUser className="me-1" /> Login
+            </Button>
+          ) : (
+            <>
+              <Button
+                as={Link}
+                to="/admin/dashboard"
+                variant="outline-primary"
+                size="sm"
+                className="d-flex align-items-center"
+              >
+                <FaTachometerAlt className="me-1" /> Dashboard
+              </Button>
+              <Button
+                variant="outline-danger"
+                size="sm"
+                className="d-flex align-items-center"
+                onClick={handleLogout}
+              >
+                <FaSignOutAlt className="me-1" /> Logout
+              </Button>
+            </>
+          )}
         </Nav>
       </Container>
     </Navbar>
