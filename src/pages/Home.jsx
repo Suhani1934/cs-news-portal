@@ -8,7 +8,6 @@ import {
   Form,
   Button,
   InputGroup,
-  Pagination,
 } from "react-bootstrap";
 import EventCard from "../components/EventCard";
 import EventModal from "../components/EventModal";
@@ -110,15 +109,14 @@ export default function Home() {
               : [
                   {
                     title: "Welcome",
-                    imageUrl:
-                      "https://via.placeholder.com/1600x400?text=News+Portal",
+                    imageUrl: "https://placehold.co/600x400",
                   },
                 ]
             ).map((item, idx) => (
               <Carousel.Item key={idx}>
                 <img
                   className="d-block w-100"
-                  src={item.imageUrl || "https://via.placeholder.com/1600x400"}
+                  src={item.imageUrl || "https://placehold.co/600x400"}
                   alt={`slide-${idx}`}
                   style={{ height: 350, objectFit: "cover" }}
                 />
@@ -131,7 +129,7 @@ export default function Home() {
         </Col>
 
         <Col md={4}>
-          <h5>Upcoming Events</h5>
+          <h5 className="event-heading">Upcoming Events</h5>
           <ListGroup>
             {upcoming.length ? (
               upcoming.map((ev) => (
@@ -170,7 +168,7 @@ export default function Home() {
       </div>
 
       {/* Latest Events */}
-      <h5>Latest Events</h5>
+      <h5 className="event-heading latest">Latest Events</h5>
       <Row xs={1} md={3} className="g-3">
         {latest.length ? (
           latest.map((ev) => (
@@ -185,7 +183,8 @@ export default function Home() {
 
       {/* Past Events with filter */}
       <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
-        <h5 className="mb-0">Past Events</h5>
+        <h5 className="mb-0 event-heading past">Past Events</h5>
+        {/* filter */}
         <InputGroup style={{ maxWidth: "400px" }}>
           <Form.Select
             size="sm"
@@ -212,6 +211,7 @@ export default function Home() {
         </InputGroup>
       </div>
 
+      {/* past event cards */}
       <Row xs={1} md={3} className="g-3 mb-3">
         {displayedPast.length ? (
           displayedPast.map((ev) => (
@@ -224,7 +224,7 @@ export default function Home() {
         )}
       </Row>
 
-      {/* Attractive Pagination */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="pagination-container">
           {/* Prev button */}
