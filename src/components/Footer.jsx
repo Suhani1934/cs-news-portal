@@ -1,5 +1,8 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
+import { FaFacebookF, FaLinkedinIn, FaInstagram, FaYoutube } from "react-icons/fa";
+import { SiX } from "react-icons/si"; 
+import "./Footer.css"; 
 
 export default function Footer() {
   return (
@@ -11,21 +14,49 @@ export default function Footer() {
             <img
               src="/DSVV_LOGO_WHITE.png"
               alt="Dept of CS"
-              height="100" 
+              height="100"
               className="d-block mx-auto mx-md-0 mb-3"
             />
             <div className="d-flex justify-content-center justify-content-md-start gap-3">
-              <a href="#" className="text-light fs-4">
-                <i className="bi bi-facebook"></i>
+              <a
+                href="https://m.facebook.com/dsvvofficial/"
+                className="social-icon facebook"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaFacebookF />
               </a>
-              <a href="#" className="text-light fs-4">
-                <i className="bi bi-twitter"></i>
+              <a
+                href="https://x.com/dsvvofficial"
+                className="social-icon xlogo"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <SiX />
               </a>
-              <a href="#" className="text-light fs-4">
-                <i className="bi bi-linkedin"></i>
+              <a
+                href="https://www.linkedin.com/company/devsanskritivishwavidyalya/"
+                className="social-icon linkedin"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaLinkedinIn />
               </a>
-              <a href="#" className="text-light fs-4">
-                <i className="bi bi-instagram"></i>
+              <a
+                href="https://www.instagram.com/dsvvofficial?igsh=MTBhYjNqMHluZ3ZqNQ=="
+                className="social-icon instagram"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaInstagram />
+              </a>
+              <a
+                href="https://youtube.com/@devsanskritivishwavidyalay4081?si=EzBPBPA1TvUTMaEA"
+                className="social-icon youtube"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaYoutube />
               </a>
             </div>
           </Col>
@@ -50,7 +81,8 @@ export default function Footer() {
               <br />
               Bhupatwala, near Shantikunj Road, Haripur Kalan, Motichur Range,
               Uttarakhand 249205
-              <br />+91-97201 07192
+              <br />
+              +91-97201 07192
               <br />
               Email: computer.science@dsvv.ac.in
             </p>

@@ -1,4 +1,3 @@
-// frontend/src/pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import API from "../api";
 import {
@@ -9,9 +8,11 @@ import {
   Form,
   Button,
   InputGroup,
+  Pagination,
 } from "react-bootstrap";
 import EventCard from "../components/EventCard";
 import EventModal from "../components/EventModal";
+import "./Home.css";
 
 export default function Home() {
   const [news, setNews] = useState([]);
@@ -19,10 +20,14 @@ export default function Home() {
   const [selected, setSelected] = useState(null);
   const [show, setShow] = useState(false);
 
-  // For past events filter
+  // Past events filter
   const [year, setYear] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filteredPast, setFilteredPast] = useState([]);
+
+  // Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   useEffect(() => {
     API.get("/news")
@@ -50,12 +55,17 @@ export default function Home() {
     .filter((e) => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  // Latest = Only past events (recent first, limit 3)
+  // Latest 3 past events
   const latest = past.slice(0, 3);
+
+  // Past events excluding latest
+  const pastExcludingLatest = past.filter(
+    (ev) => !latest.some((l) => l._id === ev._id)
+  );
 
   // Apply filter function
   const applyFilter = () => {
-    let temp = past;
+    let temp = pastExcludingLatest;
     if (year) {
       temp = temp.filter(
         (e) => new Date(e.eventDate).getFullYear() === parseInt(year)
@@ -69,22 +79,34 @@ export default function Home() {
       );
     }
     setFilteredPast(temp);
+    setCurrentPage(1); // Reset page when filter applied
   };
 
   // Prepare years list from past events
   const years = Array.from(
-    new Set(past.map((e) => new Date(e.eventDate).getFullYear()))
+    new Set(pastExcludingLatest.map((e) => new Date(e.eventDate).getFullYear()))
   ).sort((a, b) => b - a);
+
+  // Pagination logic
+  const displayedPast = (
+    filteredPast.length ? filteredPast : pastExcludingLatest
+  ).slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  const totalPages = Math.ceil(
+    (filteredPast.length ? filteredPast.length : pastExcludingLatest.length) /
+      itemsPerPage
+  );
+
+  const handlePageChange = (page) => setCurrentPage(page);
 
   return (
     <>
       {/* Banner + Upcoming Events list */}
       <Row className="mb-4">
-        {/* Carousel Banner */}
         <Col md={8}>
           <Carousel>
             {(latest.length
-              ? latest.slice(0, 3)
+              ? latest
               : [
                   {
                     title: "Welcome",
@@ -190,13 +212,64 @@ export default function Home() {
         </InputGroup>
       </div>
 
-      <Row xs={1} md={3} className="g-3 mb-4">
-        {(filteredPast.length ? filteredPast : past).map((ev) => (
-          <Col key={ev._id}>
-            <EventCard ev={ev} onView={handleView} />
-          </Col>
-        ))}
+      <Row xs={1} md={3} className="g-3 mb-3">
+        {displayedPast.length ? (
+          displayedPast.map((ev) => (
+            <Col key={ev._id}>
+              <EventCard ev={ev} onView={handleView} />
+            </Col>
+          ))
+        ) : (
+          <p className="px-3">No past events found.</p>
+        )}
       </Row>
+
+      {/* Attractive Pagination */}
+      {totalPages > 1 && (
+        <div className="pagination-container">
+          {/* Prev button */}
+          <button
+            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            style={{
+              opacity: currentPage === 1 ? 0.5 : 1,
+              cursor: currentPage === 1 ? "not-allowed" : "pointer",
+            }}
+          >
+            &laquo;
+          </button>
+
+          {/* Page numbers */}
+          {[...Array(totalPages)].map((_, idx) => (
+            <button
+              key={idx + 1}
+              className={currentPage === idx + 1 ? "active" : ""}
+              onClick={() => handlePageChange(idx + 1)}
+            >
+              {idx + 1}
+            </button>
+          ))}
+
+          {/* Next button */}
+          <button
+            onClick={() =>
+              currentPage < totalPages && handlePageChange(currentPage + 1)
+            }
+            disabled={currentPage === totalPages}
+            style={{
+              opacity: currentPage === totalPages ? 0.5 : 1,
+              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+            }}
+          >
+            &raquo;
+          </button>
+
+          {/* Total pages info */}
+          <span className="pagination-info">
+            Page {currentPage} of {totalPages}
+          </span>
+        </div>
+      )}
 
       <EventModal show={show} onHide={() => setShow(false)} event={selected} />
     </>

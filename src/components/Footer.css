@@ -1,0 +1,37 @@
+.social-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #444;
+  color: white;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.social-icon:hover {
+  transform: scale(1.2);
+  color: white;
+}
+
+.social-icon.facebook:hover {
+  background-color: #1877f2;
+}
+
+.social-icon.xlogo:hover {
+  background-color: #000;
+}
+
+.social-icon.linkedin:hover {
+  background-color: #0a66c2;
+}
+
+.social-icon.instagram:hover {
+  background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285AEB 90%);
+}
+
+.social-icon.youtube:hover {
+  background-color: #ff0000;
+}
