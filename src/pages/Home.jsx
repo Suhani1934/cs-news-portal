@@ -103,26 +103,64 @@ export default function Home() {
       {/* Banner + Upcoming Events list */}
       <Row className="mb-4">
         <Col md={8}>
-          <Carousel>
+          <Carousel fade indicators interval={3000}>
             {(latest.length
               ? latest
               : [
                   {
-                    title: "Welcome",
-                    imageUrl: "https://placehold.co/600x400",
+                    title: "Welcome to Our News Portal",
+                    imageUrl: "https://placehold.co/1200x400",
                   },
                 ]
             ).map((item, idx) => (
               <Carousel.Item key={idx}>
-                <img
-                  className="d-block w-100"
-                  src={item.imageUrl || "https://placehold.co/600x400"}
-                  alt={`slide-${idx}`}
-                  style={{ height: 350, objectFit: "cover" }}
-                />
-                <Carousel.Caption>
-                  <h3>{item.title}</h3>
-                </Carousel.Caption>
+                <div className="position-relative">
+                  <img
+                    className="d-block w-100"
+                    src={item.imageUrl || "https://placehold.co/1200x400"}
+                    alt={`slide-${idx}`}
+                    style={{
+                      height: 400,
+                      objectFit: "cover",
+                      borderRadius: "10px",
+                    }}
+                  />
+
+                  {/* Bottom black gradient overlay */}
+                  <div
+                    className="position-absolute bottom-0 start-0 w-100"
+                    style={{
+                      height: "50%", // adjust height as needed
+                      background:
+                        "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
+                      borderRadius: "0 0 10px 10px",
+                    }}
+                  ></div>
+
+                  {/* Title at top-center */}
+                  <Carousel.Caption
+                    style={{
+                      top: "5%", // moves title near top
+                      bottom: "auto",
+                      textAlign: "center",
+                    }}
+                  >
+                    <h2
+                      className="fw-bold"
+                      style={{
+                        fontSize: "1.1rem", 
+                        color: "#003366", 
+                        backgroundColor: "rgba(255, 223, 0, 0.9)", 
+                        display: "inline-block",
+                        padding: "6px 16px",
+                        borderRadius: "25px",
+                        boxShadow: "1px 1px 8px rgba(0,0,0,0.3)",
+                      }}
+                    >
+                      {item.title}
+                    </h2>
+                  </Carousel.Caption>
+                </div>
               </Carousel.Item>
             ))}
           </Carousel>
