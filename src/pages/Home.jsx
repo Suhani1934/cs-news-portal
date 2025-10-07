@@ -26,7 +26,7 @@ export default function Home() {
 
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 8;
 
   useEffect(() => {
     API.get("/news")
@@ -54,8 +54,8 @@ export default function Home() {
     .filter((e) => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  // Latest 3 past events
-  const latest = past.slice(0, 3);
+  // Latest 4 past events
+  const latest = past.slice(0, 4);
 
   // Past events excluding latest
   const pastExcludingLatest = past.filter(
@@ -207,7 +207,7 @@ export default function Home() {
 
       {/* Latest Events */}
       <h5 className="event-heading latest">Latest Events</h5>
-      <Row xs={1} md={3} className="g-3">
+      <Row xs={1} md={4} className="g-3">
         {latest.length ? (
           latest.map((ev) => (
             <Col key={ev._id}>
@@ -250,7 +250,7 @@ export default function Home() {
       </div>
 
       {/* past event cards */}
-      <Row xs={1} md={3} className="g-3 mb-3">
+      <Row xs={1} md={4} className="g-3 mb-3">
         {displayedPast.length ? (
           displayedPast.map((ev) => (
             <Col key={ev._id}>

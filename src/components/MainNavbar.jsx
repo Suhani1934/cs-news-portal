@@ -1,4 +1,3 @@
-// frontend/src/components/MainNavbar.jsx
 import React from "react";
 import { Navbar, Nav, Container, Button } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
@@ -14,8 +13,8 @@ export default function MainNavbar() {
   };
 
   return (
-    <Navbar expand="lg" sticky="top" className="navbar-glass shadow-sm">
-      <Container className="d-flex justify-content-between align-items-center">
+    <Navbar expand="lg" sticky="top" className="navbar-glass shadow-sm px-3">
+      <Container fluid className="d-flex justify-content-between align-items-center">
         {/* Left: Logo */}
         <Navbar.Brand as={Link} to="/" className="d-flex align-items-center">
           <img
@@ -29,7 +28,7 @@ export default function MainNavbar() {
         {/* Center: Title */}
         <div className="mx-auto text-center d-none d-lg-block">
           <span style={{ fontSize: "1.5rem", fontWeight: "700", color: "#000" }}>
-            Dept of Computer Science News & Events
+            Department of Computer Science News & Events
           </span>
         </div>
 
@@ -43,7 +42,7 @@ export default function MainNavbar() {
               size="sm"
               className="d-flex align-items-center"
             >
-              <FaUser className="me-1" /> Login
+              <FaUser className="me-1" /> Admin Login
             </Button>
           ) : (
             <>

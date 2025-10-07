@@ -1,13 +1,13 @@
 import React from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { FaFacebookF, FaLinkedinIn, FaInstagram, FaYoutube } from "react-icons/fa";
-import { SiX } from "react-icons/si"; 
-import "./Footer.css"; 
+import { SiX } from "react-icons/si";
+import "./Footer.css";
 
 export default function Footer() {
   return (
     <footer className="bg-dark text-light pt-5">
-      <Container>
+      <Container fluid className="px-5">
         <Row className="mb-4 align-items-start text-center text-md-start">
           {/* Left Column: Logo + Social Icons */}
           <Col md={4} sm={12} className="mb-3">
@@ -92,8 +92,7 @@ export default function Footer() {
         {/* Bottom copyright */}
         <Row>
           <Col className="text-center pb-3 border-top border-secondary">
-            &copy; {new Date().getFullYear()} Department of Computer Science,
-            DSVV. All rights reserved.
+            &copy; {new Date().getFullYear()} Department of Computer Science, DSVV. All rights reserved.
           </Col>
         </Row>
       </Container>
