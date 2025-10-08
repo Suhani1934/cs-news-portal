@@ -10,7 +10,7 @@ export default function EventCard({ ev, onView }) {
 
   const dateStr = new Date(ev.eventDate).toLocaleString("en-IN", {
     day: "numeric",
-    month: "short",
+    month: "long",
     year: "numeric",
     timeZone: "Asia/Kolkata",
   });
