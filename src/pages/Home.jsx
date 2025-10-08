@@ -108,8 +108,8 @@ export default function Home() {
               ? latest
               : [
                   {
-                    title: "Welcome to Our News Portal",
-                    imageUrl: "https://placehold.co/1200x400",
+                    title: "Welcome to Department of Computer Science News & Events",
+                    imageUrl: "https://res.cloudinary.com/dil1tjdrc/image/upload/v1759903712/dsvv-banner_jus5pk.jpg",
                   },
                 ]
             ).map((item, idx) => (
@@ -117,7 +117,7 @@ export default function Home() {
                 <div className="position-relative">
                   <img
                     className="d-block w-100"
-                    src={item.imageUrl || "https://placehold.co/1200x400"}
+                    src={item.imageUrl || "https://res.cloudinary.com/dil1tjdrc/image/upload/v1759903712/dsvv-banner_jus5pk.jpg"}
                     alt={`slide-${idx}`}
                     style={{
                       height: 400,

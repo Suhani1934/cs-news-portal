@@ -8,10 +8,11 @@ export default function EventCard({ ev, onView }) {
       ? ev.description.slice(0, 100) + "..."
       : ev.description;
 
-  const dateStr = new Date(ev.eventDate).toLocaleDateString("en-US", {
+  const dateStr = new Date(ev.eventDate).toLocaleString("en-IN", {
     day: "numeric",
     month: "short",
     year: "numeric",
+    timeZone: "Asia/Kolkata",
   });
 
   return (
@@ -34,7 +35,8 @@ export default function EventCard({ ev, onView }) {
         variant="top"
         src={ev.imageUrl}
         alt={ev.title}
-        style={{ height: 180, objectFit: "cover" }}
+        onClick={() => onView(ev)}
+        style={{ height: 180, objectFit: "cover", cursor: "pointer" }}
       />
 
       <Card.Body>

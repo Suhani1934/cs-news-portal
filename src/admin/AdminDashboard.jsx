@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   const [showForm, setShowForm] = useState(false);
   const [upcomingPage, setUpcomingPage] = useState(1);
   const [pastPage, setPastPage] = useState(1);
-  const itemsPerPage = 5;
+  const itemsPerPage = 10;
 
   const navigate = useNavigate();
   const adminKey = localStorage.getItem("admin_key");
