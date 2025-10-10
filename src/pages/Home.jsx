@@ -19,23 +19,40 @@ export default function Home() {
   const [selected, setSelected] = useState(null);
   const [show, setShow] = useState(false);
 
+  // Loader states
+  const [loading, setLoading] = useState(true); // main loader
+  const [loadingUpcoming, setLoadingUpcoming] = useState(true);
+  const [loadingLatest, setLoadingLatest] = useState(true);
+  const [loadingPast, setLoadingPast] = useState(true);
+
   // Past events filter
   const [year, setYear] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filteredPast, setFilteredPast] = useState([]);
-
-  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
   useEffect(() => {
-    API.get("/news")
-      .then((res) => setNews(res.data))
-      .catch(console.error);
-    API.get("/events")
-      .then((res) => setEvents(res.data))
-      .catch(console.error);
+    setLoading(true);
+    Promise.all([API.get("/news"), API.get("/events")])
+      .then(([newsRes, eventsRes]) => {
+        setNews(newsRes.data);
+        setEvents(eventsRes.data);
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, []);
+
+  // When events update → turn off individual loaders with small delay for smoothness
+  useEffect(() => {
+    if (events.length) {
+      setTimeout(() => {
+        setLoadingUpcoming(false);
+        setLoadingLatest(false);
+        setLoadingPast(false);
+      }, 500); // small delay for nice animation
+    }
+  }, [events]);
 
   const handleView = (ev) => {
     setSelected(ev);
@@ -44,25 +61,21 @@ export default function Home() {
 
   const now = new Date();
 
-  // Upcoming events
+  // Event data categorization
   const upcoming = events
     .filter((e) => new Date(e.eventDate) >= now)
     .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
 
-  // Past events
   const past = events
     .filter((e) => new Date(e.eventDate) < now)
     .sort((a, b) => new Date(b.eventDate) - new Date(a.eventDate));
 
-  // Latest 4 past events
   const latest = past.slice(0, 4);
-
-  // Past events excluding latest
   const pastExcludingLatest = past.filter(
     (ev) => !latest.some((l) => l._id === ev._id)
   );
 
-  // Apply filter function
+  // Filters
   const applyFilter = () => {
     let temp = pastExcludingLatest;
     if (year) {
@@ -78,10 +91,10 @@ export default function Home() {
       );
     }
     setFilteredPast(temp);
-    setCurrentPage(1); // Reset page when filter applied
+    setCurrentPage(1);
   };
 
-  // Prepare years list from past events
+  // Year options
   const years = Array.from(
     new Set(pastExcludingLatest.map((e) => new Date(e.eventDate).getFullYear()))
   ).sort((a, b) => b - a);
@@ -98,18 +111,27 @@ export default function Home() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
+  // Global Loader
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="custom-loader"></div>
+        <p className="loader-text">Loading content...</p>
+      </div>
+    );
+  }
+
   return (
     <>
-      {/* Banner + Upcoming Events list */}
+      {/* Banner + Upcoming Events */}
       <Row className="mb-4">
         <Col md={8}>
           <Carousel fade controls={false} indicators={false} interval={3000}>
-            {(past.length
-              ? past
+            {(latest.length
+              ? latest
               : [
                   {
-                    title:
-                      "Welcome to Department of Computer Science News & Events",
+                    title: "Welcome to DSVV Student Club News & Events",
                     imageUrl:
                       "https://res.cloudinary.com/dil1tjdrc/image/upload/v1759903712/dsvv-banner_jus5pk.jpg",
                   },
@@ -130,22 +152,19 @@ export default function Home() {
                       borderRadius: "10px",
                     }}
                   />
-
-                  {/* Bottom black gradient overlay */}
                   <div
                     className="position-absolute bottom-0 start-0 w-100"
                     style={{
-                      height: "50%", // adjust height as needed
+                      height: "50%",
                       background:
                         "linear-gradient(to top, rgba(0,0,0,0.6), transparent)",
                       borderRadius: "0 0 10px 10px",
                     }}
                   ></div>
 
-                  {/* Title at top-center */}
                   <Carousel.Caption
                     style={{
-                      top: "5%", // moves title near top
+                      top: "5%",
                       bottom: "auto",
                       textAlign: "center",
                     }}
@@ -173,7 +192,14 @@ export default function Home() {
 
         <Col md={4}>
           <h5 className="event-heading">Upcoming Events</h5>
-          <ListGroup>
+
+          {loadingUpcoming ? (
+            <div className="section-loader">
+              <div className="small-loader"></div>
+              <p>Loading upcoming events...</p>
+            </div>
+          ) : upcoming.length ? (
+            <ListGroup>
             {upcoming.length ? (
               upcoming.map((ev) => {
                 const eventDate = new Date(ev.eventDate);
@@ -220,43 +246,36 @@ export default function Home() {
               <ListGroup.Item>No upcoming events</ListGroup.Item>
             )}
           </ListGroup>
+          ) : (
+            <ListGroup.Item>No upcoming events</ListGroup.Item>
+          )}
         </Col>
       </Row>
 
-      {/* News marquee */}
-      {/* <div className="mt-3 mb-3 p-2 bg-light border">
-        <marquee
-          behavior="scroll"
-          direction="left"
-          style={{ color: "red", fontWeight: 600 }}
-        >
-          {news.map((n, i) => (
-            <span key={n.id}>
-              {n.title}
-              {i < news.length - 1 ? " — " : ""}
-            </span>
-          ))}
-        </marquee>
-      </div> */}
-
       {/* Latest Events */}
       <h5 className="event-heading latest">Latest Events</h5>
-      <Row xs={1} md={4} className="g-3">
-        {latest.length ? (
-          latest.map((ev) => (
-            <Col key={ev._id}>
-              <EventCard ev={ev} onView={handleView} />
-            </Col>
-          ))
-        ) : (
-          <p className="px-3">No recent past events.</p>
-        )}
-      </Row>
+      {loadingLatest ? (
+        <div className="section-loader">
+          <div className="small-loader"></div>
+          <p>Loading latest events...</p>
+        </div>
+      ) : (
+        <Row xs={1} md={4} className="g-3">
+          {latest.length ? (
+            latest.map((ev) => (
+              <Col key={ev._id}>
+                <EventCard ev={ev} onView={handleView} />
+              </Col>
+            ))
+          ) : (
+            <p className="px-3">No recent past events.</p>
+          )}
+        </Row>
+      )}
 
-      {/* Past Events with filter */}
+      {/* Past Events */}
       <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
         <h5 className="mb-0 event-heading past">Past Events</h5>
-        {/* filter */}
         <InputGroup style={{ maxWidth: "400px" }}>
           <Form.Select
             size="sm"
@@ -283,64 +302,70 @@ export default function Home() {
         </InputGroup>
       </div>
 
-      {/* past event cards */}
-      <Row xs={1} md={4} className="g-3 mb-3">
-        {displayedPast.length ? (
-          displayedPast.map((ev) => (
-            <Col key={ev._id}>
-              <EventCard ev={ev} onView={handleView} />
-            </Col>
-          ))
-        ) : (
-          <p className="px-3">No past events found.</p>
-        )}
-      </Row>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="pagination-container">
-          {/* Prev button */}
-          <button
-            onClick={() => currentPage > 1 && handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            style={{
-              opacity: currentPage === 1 ? 0.5 : 1,
-              cursor: currentPage === 1 ? "not-allowed" : "pointer",
-            }}
-          >
-            &laquo;
-          </button>
-
-          {/* Page numbers */}
-          {[...Array(totalPages)].map((_, idx) => (
-            <button
-              key={idx + 1}
-              className={currentPage === idx + 1 ? "active" : ""}
-              onClick={() => handlePageChange(idx + 1)}
-            >
-              {idx + 1}
-            </button>
-          ))}
-
-          {/* Next button */}
-          <button
-            onClick={() =>
-              currentPage < totalPages && handlePageChange(currentPage + 1)
-            }
-            disabled={currentPage === totalPages}
-            style={{
-              opacity: currentPage === totalPages ? 0.5 : 1,
-              cursor: currentPage === totalPages ? "not-allowed" : "pointer",
-            }}
-          >
-            &raquo;
-          </button>
-
-          {/* Total pages info */}
-          <span className="pagination-info">
-            Page {currentPage} of {totalPages}
-          </span>
+      {loadingPast ? (
+        <div className="section-loader">
+          <div className="small-loader"></div>
+          <p>Loading past events...</p>
         </div>
+      ) : (
+        <>
+          <Row xs={1} md={4} className="g-3 mb-3">
+            {displayedPast.length ? (
+              displayedPast.map((ev) => (
+                <Col key={ev._id}>
+                  <EventCard ev={ev} onView={handleView} />
+                </Col>
+              ))
+            ) : (
+              <p className="px-3">No past events found.</p>
+            )}
+          </Row>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="pagination-container">
+              <button
+                onClick={() =>
+                  currentPage > 1 && handlePageChange(currentPage - 1)
+                }
+                disabled={currentPage === 1}
+                style={{
+                  opacity: currentPage === 1 ? 0.5 : 1,
+                  cursor: currentPage === 1 ? "not-allowed" : "pointer",
+                }}
+              >
+                &laquo;
+              </button>
+
+              {[...Array(totalPages)].map((_, idx) => (
+                <button
+                  key={idx + 1}
+                  className={currentPage === idx + 1 ? "active" : ""}
+                  onClick={() => handlePageChange(idx + 1)}
+                >
+                  {idx + 1}
+                </button>
+              ))}
+
+              <button
+                onClick={() =>
+                  currentPage < totalPages && handlePageChange(currentPage + 1)
+                }
+                disabled={currentPage === totalPages}
+                style={{
+                  opacity: currentPage === totalPages ? 0.5 : 1,
+                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                }}
+              >
+                &raquo;
+              </button>
+
+              <span className="pagination-info">
+                Page {currentPage} of {totalPages}
+              </span>
+            </div>
+          )}
+        </>
       )}
 
       <EventModal show={show} onHide={() => setShow(false)} event={selected} />

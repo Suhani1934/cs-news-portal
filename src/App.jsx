@@ -12,8 +12,8 @@ export default function App() {
     <div className="d-flex flex-column min-vh-100">
       <MainNavbar />
 
-      {/* Use full width layout */}
-      <div className="flex-grow-1 container-fluid mt-4 px-5">
+      {/* full width layout */}
+      <div className="flex-grow-1 container-fluid mt-4 px-4">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/events/:id" element={<EventDetail />} />
