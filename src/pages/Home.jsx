@@ -191,65 +191,65 @@ export default function Home() {
         </Col>
 
         <Col md={4}>
-          <h5 className="event-heading">Upcoming Events</h5>
+  <h5 className="event-heading">Upcoming Events</h5>
 
-          {loadingUpcoming ? (
-            <div className="section-loader">
-              <div className="small-loader"></div>
-              <p>Loading upcoming events...</p>
-            </div>
-          ) : upcoming.length ? (
-            <ListGroup>
-            {upcoming.length ? (
-              upcoming.map((ev) => {
-                const eventDate = new Date(ev.eventDate);
-                const day = eventDate.getDate();
-                const month = eventDate.toLocaleString("default", {
-                  month: "short",
-                });
-                const year = eventDate.getFullYear();
+  {loadingUpcoming ? (
+    <div className="section-loader">
+      <div className="small-loader"></div>
+      <p>Loading upcoming events...</p>
+    </div>
+  ) : upcoming.length ? (
+    // ✅ Scrollable container for upcoming events
+    <div className="scrollable-events">
+      <ListGroup>
+        {upcoming.map((ev) => {
+          const eventDate = new Date(ev.eventDate);
+          const day = eventDate.getDate();
+          const month = eventDate.toLocaleString("default", {
+            month: "short",
+          });
+          const year = eventDate.getFullYear();
 
-                return (
-                  <ListGroup.Item
-                    key={ev._id}
-                    className="d-flex align-items-center"
-                  >
-                    {/* Date Box */}
-                    <div
-                      style={{
-                        width: "80px",
-                        height: "80px", 
-                        backgroundColor: "rgba(255, 221, 0, 1)",
-                        color: "#000",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderRadius: "5px",
-                        marginRight: "15px",
-                        fontWeight: "600",
-                      }}
-                    >
-                      <div style={{ fontSize: "1.2rem" }}>{day}</div>
-                      <div style={{ fontSize: "0.85rem" }}>{month}</div>
-                      <div style={{ fontSize: "0.75rem" }}>{year}</div>
-                    </div>
+          return (
+            <ListGroup.Item
+              key={ev._id}
+              className="d-flex align-items-center"
+            >
+              {/* Date Box */}
+              <div
+                style={{
+                  width: "80px",
+                  height: "80px",
+                  backgroundColor: "rgba(255, 221, 0, 1)",
+                  color: "#000",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "5px",
+                  marginRight: "15px",
+                  fontWeight: "600",
+                }}
+              >
+                <div style={{ fontSize: "1.2rem" }}>{day}</div>
+                <div style={{ fontSize: "0.85rem" }}>{month}</div>
+                <div style={{ fontSize: "0.75rem" }}>{year}</div>
+              </div>
 
-                    {/* Event Title */}
-                    <div style={{ fontWeight: "600", color: "#337ab7" }}>
-                      {ev.title}
-                    </div>
-                  </ListGroup.Item>
-                );
-              })
-            ) : (
-              <ListGroup.Item>No upcoming events</ListGroup.Item>
-            )}
-          </ListGroup>
-          ) : (
-            <ListGroup.Item>No upcoming events</ListGroup.Item>
-          )}
-        </Col>
+              {/* Event Title */}
+              <div style={{ fontWeight: "600", color: "#337ab7" }}>
+                {ev.title}
+              </div>
+            </ListGroup.Item>
+          );
+        })}
+      </ListGroup>
+    </div>
+  ) : (
+    <ListGroup.Item>No upcoming events</ListGroup.Item>
+  )}
+</Col>
+
       </Row>
 
       {/* Latest Events */}
