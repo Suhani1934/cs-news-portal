@@ -50,7 +50,7 @@ export default function Home() {
         setLoadingUpcoming(false);
         setLoadingLatest(false);
         setLoadingPast(false);
-      }, 500); // small delay for nice animation
+      }, 500); // small delay for animation
     }
   }, [events]);
 
@@ -116,7 +116,7 @@ export default function Home() {
     return (
       <div className="loader-container">
         <div className="custom-loader"></div>
-        <p className="loader-text">Loading content...</p>
+        <p className="loader-text">Loading ...</p>
       </div>
     );
   }
@@ -147,7 +147,7 @@ export default function Home() {
                     }
                     alt={`slide-${idx}`}
                     style={{
-                      height: 400,
+                      height: 555,
                       objectFit: "cover",
                       borderRadius: "10px",
                     }}
@@ -172,7 +172,7 @@ export default function Home() {
                     <h2
                       className="fw-bold"
                       style={{
-                        fontSize: "1.1rem",
+                        fontSize: "1.2rem",
                         color: "#003366",
                         backgroundColor: "rgba(255, 223, 0, 0.9)",
                         display: "inline-block",
@@ -191,69 +191,92 @@ export default function Home() {
         </Col>
 
         <Col md={4}>
-  <h5 className="event-heading">Upcoming Events</h5>
+          <h5 className="event-heading">
+            Upcoming Events
+            <img
+              src="/upcoming.gif"
+              alt="upcoming events animation"
+              className="heading-gif"
+            />
+          </h5>
 
-  {loadingUpcoming ? (
-    <div className="section-loader">
-      <div className="small-loader"></div>
-      <p>Loading upcoming events...</p>
-    </div>
-  ) : upcoming.length ? (
-    // ✅ Scrollable container for upcoming events
-    <div className="scrollable-events">
-      <ListGroup>
-        {upcoming.map((ev) => {
-          const eventDate = new Date(ev.eventDate);
-          const day = eventDate.getDate();
-          const month = eventDate.toLocaleString("default", {
-            month: "short",
-          });
-          const year = eventDate.getFullYear();
+          {loadingUpcoming ? (
+            <div className="section-loader">
+              <div className="small-loader"></div>
+              <p>Loading upcoming events...</p>
+            </div>
+          ) : upcoming.length ? (
+            // Scrollable container for upcoming events
+            <div className="scrollable-events">
+              <ListGroup>
+                {upcoming.map((ev) => {
+                  const eventDate = new Date(ev.eventDate);
+                  const day = eventDate.getDate();
+                  const month = eventDate.toLocaleString("default", {
+                    month: "long",
+                  });
+                  const year = eventDate.getFullYear();
 
-          return (
-            <ListGroup.Item
-              key={ev._id}
-              className="d-flex align-items-center"
-            >
-              {/* Date Box */}
-              <div
-                style={{
-                  width: "80px",
-                  height: "80px",
-                  backgroundColor: "rgba(255, 221, 0, 1)",
-                  color: "#000",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "5px",
-                  marginRight: "15px",
-                  fontWeight: "600",
-                }}
-              >
-                <div style={{ fontSize: "1.2rem" }}>{day}</div>
-                <div style={{ fontSize: "0.85rem" }}>{month}</div>
-                <div style={{ fontSize: "0.75rem" }}>{year}</div>
-              </div>
+                  return (
+                    <ListGroup.Item
+                      key={ev._id}
+                      className="d-flex align-items-center"
+                    >
+                      {/* Date Box */}
+                      <div
+                        style={{
+                          width: "100px",
+                          height: "100px",
+                          backgroundColor: "rgba(255, 221, 0, 1)",
+                          color: "#000",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          borderRadius: "5px",
+                          marginRight: "15px",
+                          fontWeight: "600",
+                        }}
+                      >
+                        <div style={{ fontSize: "1.3rem" }}>{day}</div>
+                        <div style={{ fontSize: "1rem" }}>{month}</div>
+                        <div style={{ fontSize: "0.90rem" }}>{year}</div>
+                      </div>
 
-              {/* Event Title */}
-              <div style={{ fontWeight: "600", color: "#337ab7" }}>
-                {ev.title}
-              </div>
-            </ListGroup.Item>
-          );
-        })}
-      </ListGroup>
-    </div>
-  ) : (
-    <ListGroup.Item>No upcoming events</ListGroup.Item>
-  )}
-</Col>
-
+                      {/* Event Title */}
+                      <div
+                        style={{
+                          fontSize: "1.2rem",
+                          fontWeight: "600",
+                          color: "#337ab7",
+                        }}
+                      >
+                        {ev.title}
+                      </div>
+                    </ListGroup.Item>
+                  );
+                })}
+              </ListGroup>
+            </div>
+          ) : (
+            <ListGroup.Item>No upcoming events</ListGroup.Item>
+          )}
+        </Col>
       </Row>
 
       {/* Latest Events */}
-      <h5 className="event-heading latest">Latest Events</h5>
+      <h5 className="event-heading latest">
+        Latest Events
+        <img
+          style={{
+            width: "5rem",
+            height: "2rem",
+          }}
+          src="/new-gif.gif"
+          alt="upcoming events animation"
+          className="heading-gif"
+        />
+      </h5>
       {loadingLatest ? (
         <div className="section-loader">
           <div className="small-loader"></div>
@@ -268,7 +291,7 @@ export default function Home() {
               </Col>
             ))
           ) : (
-            <p className="px-3">No recent past events.</p>
+            <p className="px-3">No recent events.</p>
           )}
         </Row>
       )}
@@ -276,6 +299,7 @@ export default function Home() {
       {/* Past Events */}
       <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
         <h5 className="mb-0 event-heading past">Past Events</h5>
+        {/* Filter */}
         <InputGroup style={{ maxWidth: "400px" }}>
           <Form.Select
             size="sm"
@@ -354,7 +378,8 @@ export default function Home() {
                 disabled={currentPage === totalPages}
                 style={{
                   opacity: currentPage === totalPages ? 0.5 : 1,
-                  cursor: currentPage === totalPages ? "not-allowed" : "pointer",
+                  cursor:
+                    currentPage === totalPages ? "not-allowed" : "pointer",
                 }}
               >
                 &raquo;
