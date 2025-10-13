@@ -27,6 +27,15 @@
   color: #dc3545;
 }
 
+.filter-bar {
+  border-left: 4px solid #ffdd00;
+  transition: all 0.3s ease;
+}
+
+.filter-bar:hover {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
 /* .date-box {
   width: "80px";
   height: "80px";

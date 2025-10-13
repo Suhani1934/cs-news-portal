@@ -7,7 +7,6 @@ import {
   ListGroup,
   Form,
   Button,
-  InputGroup,
 } from "react-bootstrap";
 import EventCard from "../components/EventCard";
 import EventModal from "../components/EventModal";
@@ -20,18 +19,20 @@ export default function Home() {
   const [show, setShow] = useState(false);
 
   // Loader states
-  const [loading, setLoading] = useState(true); // main loader
+  const [loading, setLoading] = useState(true);
   const [loadingUpcoming, setLoadingUpcoming] = useState(true);
   const [loadingLatest, setLoadingLatest] = useState(true);
   const [loadingPast, setLoadingPast] = useState(true);
 
   // Past events filter
   const [year, setYear] = useState("");
+  const [month, setMonth] = useState("");
   const [keyword, setKeyword] = useState("");
   const [filteredPast, setFilteredPast] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
+  // Fetch data
   useEffect(() => {
     setLoading(true);
     Promise.all([API.get("/news"), API.get("/events")])
@@ -43,14 +44,14 @@ export default function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  // When events update → turn off individual loaders with small delay for smoothness
+  // Smooth loader transition
   useEffect(() => {
     if (events.length) {
       setTimeout(() => {
         setLoadingUpcoming(false);
         setLoadingLatest(false);
         setLoadingPast(false);
-      }, 500); // small delay for animation
+      }, 500);
     }
   }, [events]);
 
@@ -61,7 +62,7 @@ export default function Home() {
 
   const now = new Date();
 
-  // Event data categorization
+  // Categorize events
   const upcoming = events
     .filter((e) => new Date(e.eventDate) >= now)
     .sort((a, b) => new Date(a.eventDate) - new Date(b.eventDate));
@@ -75,14 +76,33 @@ export default function Home() {
     (ev) => !latest.some((l) => l._id === ev._id)
   );
 
-  // Filters
+  // Dynamic filter options
+  const years = Array.from(
+    new Set(pastExcludingLatest.map((e) => new Date(e.eventDate).getFullYear()))
+  ).sort((a, b) => b - a);
+
+  const months = [
+    ...new Set(
+      pastExcludingLatest.map((e) => new Date(e.eventDate).getMonth() + 1)
+    ),
+  ].sort((a, b) => a - b);
+
+  // Apply filter logic
   const applyFilter = () => {
     let temp = pastExcludingLatest;
+
     if (year) {
       temp = temp.filter(
         (e) => new Date(e.eventDate).getFullYear() === parseInt(year)
       );
     }
+
+    if (month) {
+      temp = temp.filter(
+        (e) => new Date(e.eventDate).getMonth() + 1 === parseInt(month)
+      );
+    }
+
     if (keyword) {
       temp = temp.filter(
         (e) =>
@@ -90,14 +110,10 @@ export default function Home() {
           e.description.toLowerCase().includes(keyword.toLowerCase())
       );
     }
+
     setFilteredPast(temp);
     setCurrentPage(1);
   };
-
-  // Year options
-  const years = Array.from(
-    new Set(pastExcludingLatest.map((e) => new Date(e.eventDate).getFullYear()))
-  ).sort((a, b) => b - a);
 
   // Pagination logic
   const displayedPast = (
@@ -111,7 +127,7 @@ export default function Home() {
 
   const handlePageChange = (page) => setCurrentPage(page);
 
-  // Global Loader
+  // Global loader
   if (loading) {
     return (
       <div className="loader-container">
@@ -191,7 +207,7 @@ export default function Home() {
         </Col>
 
         <Col md={4}>
-          <h5 className="event-heading">
+          <h5 className="event-heading d-flex align-items-center gap-2">
             Upcoming Events
             <img
               src="/upcoming.gif"
@@ -206,7 +222,6 @@ export default function Home() {
               <p>Loading upcoming events...</p>
             </div>
           ) : upcoming.length ? (
-            // Scrollable container for upcoming events
             <div className="scrollable-events">
               <ListGroup>
                 {upcoming.map((ev) => {
@@ -222,7 +237,6 @@ export default function Home() {
                       key={ev._id}
                       className="d-flex align-items-center"
                     >
-                      {/* Date Box */}
                       <div
                         style={{
                           width: "100px",
@@ -240,10 +254,9 @@ export default function Home() {
                       >
                         <div style={{ fontSize: "1.3rem" }}>{day}</div>
                         <div style={{ fontSize: "1rem" }}>{month}</div>
-                        <div style={{ fontSize: "0.90rem" }}>{year}</div>
+                        <div style={{ fontSize: "0.9rem" }}>{year}</div>
                       </div>
 
-                      {/* Event Title */}
                       <div
                         style={{
                           fontSize: "1.2rem",
@@ -265,18 +278,16 @@ export default function Home() {
       </Row>
 
       {/* Latest Events */}
-      <h5 className="event-heading latest">
+      <h5 className="event-heading latest d-flex align-items-center gap-2">
         Latest Events
         <img
-          style={{
-            width: "5rem",
-            height: "2rem",
-          }}
+          style={{ width: "5rem", height: "2rem" }}
           src="/new-gif.gif"
-          alt="upcoming events animation"
+          alt="latest events animation"
           className="heading-gif"
         />
       </h5>
+
       {loadingLatest ? (
         <div className="section-loader">
           <div className="small-loader"></div>
@@ -296,36 +307,62 @@ export default function Home() {
         </Row>
       )}
 
-      {/* Past Events */}
-      <div className="d-flex align-items-center justify-content-between mt-4 mb-2">
+      {/* Past Events + Filters */}
+      <div className="d-flex flex-column flex-md-row align-items-md-center justify-content-between mt-4 mb-3 gap-2">
         <h5 className="mb-0 event-heading past">Past Events</h5>
-        {/* Filter */}
-        <InputGroup style={{ maxWidth: "400px" }}>
+
+        <div className="filter-bar d-flex flex-wrap gap-2 p-2 rounded bg-light shadow-sm">
           <Form.Select
             size="sm"
             value={year}
             onChange={(e) => setYear(e.target.value)}
+            style={{ width: "120px" }}
           >
-            <option value="">All Years</option>
+            <option value="">Year</option>
             {years.map((y) => (
               <option key={y} value={y}>
                 {y}
               </option>
             ))}
           </Form.Select>
+
+          <Form.Select
+            size="sm"
+            value={month}
+            onChange={(e) => setMonth(e.target.value)}
+            style={{ width: "130px" }}
+          >
+            <option value="">Month</option>
+            {months.map((m) => (
+              <option key={m} value={m}>
+                {new Date(0, m - 1).toLocaleString("default", {
+                  month: "long",
+                })}
+              </option>
+            ))}
+          </Form.Select>
+
           <Form.Control
             size="sm"
             type="text"
             placeholder="Search..."
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
+            style={{ width: "180px" }}
           />
-          <Button size="sm" variant="primary" onClick={applyFilter}>
+
+          <Button
+            size="sm"
+            variant="warning"
+            className="fw-semibold"
+            onClick={applyFilter}
+          >
             Apply
           </Button>
-        </InputGroup>
+        </div>
       </div>
 
+      {/* Past Events List */}
       {loadingPast ? (
         <div className="section-loader">
           <div className="small-loader"></div>
@@ -345,9 +382,10 @@ export default function Home() {
             )}
           </Row>
 
-          {/* Pagination */}
+          {/* Pagination with Dots */}
           {totalPages > 1 && (
             <div className="pagination-container">
+              {/* Prev */}
               <button
                 onClick={() =>
                   currentPage > 1 && handlePageChange(currentPage - 1)
@@ -361,19 +399,55 @@ export default function Home() {
                 &laquo;
               </button>
 
-              {[...Array(totalPages)].map((_, idx) => (
-                <button
-                  key={idx + 1}
-                  className={currentPage === idx + 1 ? "active" : ""}
-                  onClick={() => handlePageChange(idx + 1)}
-                >
-                  {idx + 1}
-                </button>
-              ))}
+              {/* Pages */}
+              {(() => {
+                const pages = [];
+                const showPages = 2;
+                let start = Math.max(1, currentPage - showPages);
+                let end = Math.min(totalPages, currentPage + showPages);
 
+                if (start > 1) {
+                  pages.push(
+                    <button key={1} onClick={() => handlePageChange(1)}>
+                      1
+                    </button>
+                  );
+                  if (start > 2) pages.push(<span key="start-dots">...</span>);
+                }
+
+                for (let i = start; i <= end; i++) {
+                  pages.push(
+                    <button
+                      key={i}
+                      className={currentPage === i ? "active" : ""}
+                      onClick={() => handlePageChange(i)}
+                    >
+                      {i}
+                    </button>
+                  );
+                }
+
+                if (end < totalPages) {
+                  if (end < totalPages - 1)
+                    pages.push(<span key="end-dots">...</span>);
+                  pages.push(
+                    <button
+                      key={totalPages}
+                      onClick={() => handlePageChange(totalPages)}
+                    >
+                      {totalPages}
+                    </button>
+                  );
+                }
+
+                return pages;
+              })()}
+
+              {/* Next */}
               <button
                 onClick={() =>
-                  currentPage < totalPages && handlePageChange(currentPage + 1)
+                  currentPage < totalPages &&
+                  handlePageChange(currentPage + 1)
                 }
                 disabled={currentPage === totalPages}
                 style={{
