@@ -1,14 +1,29 @@
-.navbar-custom {
+.navbar-glass {
   position: sticky;
   top: 0;
   z-index: 999;
   backdrop-filter: blur(10px);
-  background-color: rgba(255, 255, 255, 0.7); 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1); 
+  background-color: rgba(255, 255, 255, 0.85);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-.navbar-custom .navbar-brand img {
-  height: 40px;
+.navbar-glass .navbar-brand img {
+  height: 50px;
   width: auto;
   margin-right: 10px;
+}
+
+@media (max-width: 992px) {
+  .navbar-glass .mx-auto.text-center {
+    display: none !important; /* hide title on mobile */
+  }
+}
+
+.navbar-glass .btn {
+  white-space: nowrap;
+}
+
+/* spacing for collapsed menu items */
+.navbar-glass .navbar-collapse {
+  gap: 0.5rem;
 }
